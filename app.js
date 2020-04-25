@@ -22,14 +22,17 @@ function enableInputs(){
     },false);
     document.addEventListener('mouseup',function(evt){
         lastRelease=evt.which;
+        console.log(lastRelease)
     },false);
     canvas.addEventListener('mousedown',function(evt){
         evt.preventDefault();
         lastPress=evt.which;
     },false);
+    canvas.addEventListener('contextmenu',function(evt){
+        evt.preventDefault();
+    },false);
 }
 function getPuzzleSolved(){
-    var c = 0;
     for(var i = 0,l = grid.length;i<l;i++){
         if(draggables[i].x !== grid[i].x || draggables[i].y !== grid[i].y){
             return false;
@@ -84,9 +87,14 @@ function act (deltaTime){
              if(draggables[i].rotationTransition>0){
                  draggables[i].rotationTransition=0;
              }
-         }
+         }else if(draggables[i].rotationTransition>0){
+            draggables[i].rotationTransition-=deltaTime *360;
+            if(draggables[i].rotationTransition<0){
+                draggables[i].rotationTransition=0;
+            }
+        }
      }
-    if(lastPress ===1){
+    if(lastPress ===1 || lastPress===3){
         for ( i = 0,l = draggables.length ; i<l;i++){
             if(draggables[i].contains(pointer)){
                 dragging=i;
@@ -101,14 +109,22 @@ function act (deltaTime){
         draggables[dragging].x = pointer.x ;
         draggables[dragging].y = pointer.y ;
 
-        if(lastRelease===1){
-
+        if(lastRelease===1 || lastRelease===3){
             if(tapArea.contains(pointer)){
-                draggables[dragging].rotation+=90;
+            if(lastRelease===1){
                 draggables[dragging].rotationTransition-=90;
+                draggables[dragging].rotation+=90;
                 if(draggables[dragging].rotation >=360){
                     draggables[dragging].rotation-=360;
-                }
+                    }
+               
+            }else if(lastRelease===3){
+                draggables[dragging].rotationTransition+=90;
+                draggables[dragging].rotation-=90;
+                if(draggables[dragging].rotation <0){
+                    draggables[dragging].rotation+=360;
+                    }
+               }
             }
             if(grid[dragging].contains(pointer) && draggables[dragging].rotation===0){
                 draggables[dragging].x = grid[dragging].x;
