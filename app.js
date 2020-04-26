@@ -11,8 +11,10 @@ var lastPress=null,
 var i=0,l=0;
 var grid = [];
 var isFinished = false; 
+var show=false;
 var spritesheet = new Image();
 var tapArea=null;
+var btnShow=null;
 var lastUpdate=0;
 // var KEY_LEFT=37,KEY_RIGHT=39;
 function enableInputs(){
@@ -77,6 +79,7 @@ function init(){
     }
     draggables=randomReorder(draggables);
     tapArea = new Rectangle2D(0,0,6,6,false);
+    btnShow= new Rectangle2D(30,20,50,30,false);
     spritesheet.src = 'assets/puzzle.png'
     enableInputs();
     run()
@@ -113,6 +116,9 @@ function act (deltaTime){
         }
      }
     if(lastPress ===1 || lastPress===3){
+        if(lastPress ===1 && btnShow.contains(pointer)){
+            show=true;
+        } else show=false
         for ( i = 0,l = draggables.length ; i<l;i++){
             if(draggables[i].contains(pointer)){
                 dragging=i;
@@ -122,7 +128,7 @@ function act (deltaTime){
         tapArea.x=pointer.x
         tapArea.y=pointer.y
         isFinished=false;
-    } 
+    }
  
     if(dragging !== null){
         draggables[dragging].x = pointer.x ;
@@ -160,8 +166,16 @@ function paint(ctx){
     ctx.fillStyle='#55f';
     ctx.fillRect(0,0,canvas.width,canvas.height);
     ctx.fillStyle='#fff';
+    ctx.textAlign='left'
+    btnShow.fill(ctx);
+    ctx.textAlign='center'
+    ctx.fillStyle='#000'
+    ctx.font='16px sans-serif'
+    ctx.fillText('HINT',btnShow.x,btnShow.y+6)
     ctx.strokeStyle='#fff'
-    ctx.textAlign='center';
+    if(show){
+        ctx.drawImage(spritesheet,150,100,300,200)
+    }
     for (var i=0, l = grid.length;i<l;i++){
         grid[i].stroke(ctx);
         // ctx.fillText(i,grid[i].x,grid[i].y);
