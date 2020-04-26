@@ -43,6 +43,13 @@ function getPuzzleSolved(){
 function random(max){
     return ~~(Math.random()*max);
 }
+function randomReorder(array){
+    var newArray = [];
+    for (var i = 0,l = array.length;i<l;i++){
+        newArray.splice(random(i+1),0,array[i]);
+    }
+    return newArray;
+}
 function init(){
     canvas = document.getElementById('canvas');
     ctx = canvas.getContext('2d');
@@ -53,11 +60,22 @@ function init(){
     for (y =0;y<4;y++){
         for(x=0;x<6;x++){
             grid.push(new Rectangle2D(x*50+150,y*50+100,50,50,true))
-            var draggable =new Rectangle2D(random(canvas.width),random(canvas.height),50,50,false)
+            var draggable =new Rectangle2D(0,0,50,50,false)
             draggable.rotation= random(4) * 90;
             draggables.push(draggable);
         }
     }
+    for(var i=0,l=draggables.length;i<l;i++){
+        x = i%6;
+        y = ~~(i/6);
+        draggables[i].left = 140 + x * 55;
+        if(i<l/2){
+            draggables[i].top = 10 + y * 55;
+        }else {
+            draggables[i].top = 180 + y *55
+        }
+    }
+    draggables=randomReorder(draggables);
     tapArea = new Rectangle2D(0,0,6,6,false);
     spritesheet.src = 'assets/puzzle.png'
     enableInputs();
@@ -103,6 +121,7 @@ function act (deltaTime){
         }
         tapArea.x=pointer.x
         tapArea.y=pointer.y
+        isFinished=false;
     } 
  
     if(dragging !== null){
